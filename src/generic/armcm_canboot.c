@@ -141,6 +141,12 @@ asm(".section .text.armcm_boot.stage_one\n"
     ".global ResetHandler\n"
     ".type ResetHandler, %function\n"
     "ResetHandler:\n"
+    // Some bootloaders (MKS) jump here with a stack pointer above the
+    // initial value; reload it so pushes can not clobber the bootup code
+    "    cpsid i\n"
+    "    movw r0, #:lower16:_stack_end\n"
+    "    movt r0, #:upper16:_stack_end\n"
+    "    mov sp, r0\n"
     "    b reset_handler_stage_two\n"
     );
 extern void ResetHandler();
